@@ -1,0 +1,4 @@
+__decrypted_*
+app-deploy/bin/*
+.idea
+.vscode

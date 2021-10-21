@@ -1,0 +1,97 @@
+{{- if .Values.railsSidekiq.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app-deploy.fullname" . }}-sidekiq
+  labels:
+    {{- include "app-deploySidekiq.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.railsSidekiq.autoscaling.enabled }}
+  replicas: {{ .Values.railsSidekiq.replicaCount }}
+  {{ end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      {{- if lt .Values.railsSidekiq.replicaCount 2.0 }}
+      maxUnavailable: 0
+      {{ else }}
+      maxUnavailable: 1
+      {{ end }}
+  selector:
+    matchLabels:
+      {{- include "app-deploySidekiq.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app-deploySidekiq.selectorLabels" . | nindent 8 }}
+        {{- include "app-deploySidekiq.labels" . | nindent 8 }}
+      {{- with .Values.railsSidekiq.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+        checksum/configmap: {{ join "" .Values.appExtConfig | sha256sum | trunc 63 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "app-deploy.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          # image: "{{ .Values.image.repository }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "bundle"
+            - "exec"
+            - "sidekiq"
+          args: ["-C", "config/sidekiq.yml"]
+          envFrom:
+            - secretRef:
+                name: app-secrets
+            - configMapRef:
+                name: app-deploy-extd-config
+          ports:
+            - name: http
+              containerPort: 7433
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 7433
+            initialDelaySeconds: {{ .Values.probesSidekiq.livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: 5
+            periodSeconds: {{ .Values.probesSidekiq.livenessProbe.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 7433
+            initialDelaySeconds: {{ .Values.probesSidekiq.readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: 5
+            periodSeconds: {{ .Values.probesSidekiq.readinessProbe.periodSeconds }}
+          lifecycle:
+            preStop:
+              exec:
+                # gracefully terminate, complete inflight work
+                command: ["bundle", "exec", "sidekiqctl", "quiet"]
+          resources:
+            {{- toYaml .Values.sidekiqResources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinitySidekiq }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end -}}

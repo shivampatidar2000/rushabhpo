@@ -1,0 +1,26 @@
+{{- if .Values.railsSidekiq.autoscaling.enabled -}}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "app-deploy.fullname" . }}-sidekiq
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "app-deploy.fullname" . }}-sidekiq
+  minReplicas:  {{ .Values.railsSidekiq.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.railsSidekiq.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.railsSidekiq.autoscaling.targetCPU }}
+  - type: Resource
+    resource:
+      name: memory 
+      target:
+        type: Utilization 
+        averageUtilization: {{ .Values.railsSidekiq.autoscaling.targetMemory }}
+{{- end -}}

@@ -1,0 +1,11 @@
+#CDE Custom area
+variables:
+ PROJECT_TYPE: "studio_pro" 
+#End - CDE Custom area
+
+
+
+include:
+  - project: 'public-tools/deploy-templates'
+    ref: master
+    file: '/app/.gitlab-ci-main.yml'
