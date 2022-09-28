@@ -23,6 +23,14 @@ module AccountBlock
       phone_number_for object
     end
 
+    # attribute :image do |a|
+    #   image_tag url_for(a.image), size: '100x100' if a.image.present?
+    # end
+    
+    attributes :patients do |object|
+      BxBlockPatient::PatientSerializer.new(object.patients)
+    end
+
     class << self
       private
 

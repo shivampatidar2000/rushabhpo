@@ -19,6 +19,8 @@ module BxBlockCategories
              join_table: "user_categoeries", dependent: :destroy
     has_many :accounts, class_name: "AccountBlock::Account", through: :user_categories,
              join_table: "user_categoeries"
+    
+    has_many :products, class_name: "BxBlockCatalogue::Product", dependent: :destroy         
 
     validates :name, uniqueness: true, presence: true
     validates_uniqueness_of :identifier, allow_blank: true

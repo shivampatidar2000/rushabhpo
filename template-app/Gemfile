@@ -61,3 +61,7 @@ gem "yabeda-http_requests" #External request monitoring
 gem "yabeda-puma-plugin"
 gem 'yabeda-sidekiq'
 gem 'bx_block_cors'
+gem 'arctic_admin'
+gem "letter_opener", group: :development
+gem 'city-state'
+# gem 'country_state_select'

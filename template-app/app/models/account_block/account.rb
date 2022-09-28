@@ -9,8 +9,11 @@ module AccountBlock
     before_create :generate_api_key
     has_one :blacklist_user, class_name: 'AccountBlock::BlackListUser', dependent: :destroy
     after_save :set_black_listed_user
+    has_many :patients, class_name: 'AccountBlock::Patient'
 
     enum status: %i[regular suspended deleted]
+    enum user_type: [:doctor, :workshop_member, :user]  
+    has_one_attached :image
 
     scope :active, -> { where(activated: true) }
     scope :existing_accounts, -> { where(status: ['regular', 'suspended']) }

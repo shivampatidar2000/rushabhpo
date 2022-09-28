@@ -1,0 +1,53 @@
+// SASS variable overrides must be declared before loading up Active Admin's styles.
+//
+// To view the variables that Active Admin provides, take a look at
+// `app/assets/stylesheets/active_admin/mixins/_variables.scss` in the
+// Active Admin source.
+//
+// For example, to change the sidebar width:
+// $sidebar-width: 242px;
+
+// Active Admin's got SASS!
+@import "active_admin/mixins";
+
+// Overriding any non-variable SASS must be done after the fact.
+// For example, to change the default status-tag color:
+//
+//   .status_tag { background: #6090DB; }
+.has_one ~ .has_many_add, .has_one ~ .has_many_remove {
+  display: none !important;
+}
+div.col-xs-4 img { max-width: 100%; }
+div.col-xs-6 img { max-width: 100%; }
+div.col-xs-8 img { max-width: 100%; }
+div.col-xs-8 { width: 200px; }
+div.col-xs-4 { width: 100px; }
+
+img {
+  max-width: 100%
+}
+.status_tag {
+  &.wip { background: orange; }
+  &.dispatched { background: blue; }
+  &.delivered { background: green; }
+  &.cancel { background: red; }
+  &.waiting  { background: #CCCC00 }
+  &.pending  { background: orange }
+  &.on_hold { background: #CCCC00 }
+  &.successful { background: green }
+}
+@import "arctic_admin/base";
+.panel_contents {
+  tbody tr {
+    border: 1px solid black !important;
+  }
+}
+
+
+#main_content{
+  background-color: #fff;
+  -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.04);
+  -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.04);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.04);
+  overflow: auto;
+}

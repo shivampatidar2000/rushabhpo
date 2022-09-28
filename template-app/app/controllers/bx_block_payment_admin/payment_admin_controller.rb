@@ -7,7 +7,7 @@ module BxBlockPaymentAdmin
       if params[:type] == "debit"
         @payments  = BxBlockPaymentAdmin::PaymentAdmin.where("current_user_id = ?", @token.id )
       end
-      return render json: {data: @payments} , status: :ok
+      ProductSerializer.newreturn render json: {data: @payments} , status: :ok
     end
 
     def show

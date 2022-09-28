@@ -29,7 +29,8 @@ module BxBlockLogin
             token: token,
             refresh_token: refresh_token,
             id: account.id
-          }}
+            }}
+            UserMailer.with(user: account).welcome_email.deliver_now
         end
 
         output.login_account(account)
